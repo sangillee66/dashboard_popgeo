@@ -39,7 +39,10 @@ wpp_2024_future <- read_excel(
 )
 wpp_2024 <- bind_rows(wpp_2024_estimates, wpp_2024_future)
 
-wpp_2024 <- wpp_2024 |> 
+wpp_2024_new <- wpp_2024 |> 
+  filter(
+    type != "Label/Separator"
+  ) |> 
   mutate(
     across(
       c(pop_jan_total, pop_jul_total, pop_jul_male, pop_jul_female, 
@@ -48,5 +51,5 @@ wpp_2024 <- wpp_2024 |>
     )
   )
 
-write_rds(wpp_2024, "wpp_2024.rds")
+write_rds(wpp_2024_new, "wpp_2024.rds")
 

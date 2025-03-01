@@ -3,5 +3,9 @@ project:
   type: website
   output-dir: docs
 
+theme: 
+  - flatly
+  - custom.scss
+
 editor: visual
 
