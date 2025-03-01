@@ -114,7 +114,7 @@ reactable(
 
 ### Column {width="35%"}
 
-::: {.card title="변수 설명" style="font-size: 50%"}
+::: {.card title="변수 설명"}
 -   Name: 국가명
 
 -   ISO3: 국가식별코드(세자리 문자)
