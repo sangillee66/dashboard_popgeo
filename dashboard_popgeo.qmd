@@ -24,7 +24,7 @@ editor_options:
 
 ## Row
 
-### Column {width="70%"}
+### Column {width="65%"}
 
 ```{r}
 #| title: World Population Prospects 2024 주요 지표
@@ -38,13 +38,31 @@ wpp_2024_sel <- wpp_2024 |>
   # ) |>  
   select(
     Type = type,
-    ISO3 = ISO3,
     Name = region_name, 
-    year, pop_jan_total, pop_jul_total, pop_jul_male, pop_jul_female,
-    pop_den, sex_ratio, median_age, natural_change, RNC, pop_change,
-    PGR, doubling_time, births, CBR, TFR, NRR, sex_ratio_birth, 
-    deaths_total, deaths_male, deaths_female, CDR, life_exp_total, 
-    life_exp_male, life_exp_female, infant_deaths, IMR, net_migrants,
+    ISO3 = ISO3,
+    year, 
+    pop_jan_t = pop_jan_total, 
+    pop_jul_t = pop_jul_total, 
+    pop_jul_m = pop_jul_male, 
+    pop_jul_f = pop_jul_female,
+    pop_den, sex_ratio, median_age, 
+    natural_chg = natural_change, 
+    RNC, 
+    pop_chg = pop_change,
+    PGR, 
+    doub_time = doubling_time, 
+    births, CBR, TFR, NRR, 
+    sex_ratio_b = sex_ratio_birth, 
+    deaths_t = deaths_total, 
+    deaths_m = deaths_male, 
+    deaths_f = deaths_female, 
+    CDR, 
+    life_exp_t = life_exp_total, 
+    life_exp_m = life_exp_male, 
+    life_exp_f = life_exp_female, 
+    inf_deaths = infant_deaths, 
+    IMR, 
+    net_mig = net_migrants,
     NMR
   )
   
@@ -53,56 +71,63 @@ reactable(
   searchable = TRUE,
   minRows = 10,
   defaultPageSize = 10,
+  theme = reactableTheme(
+    style = list(
+      fontSize = "13px"
+    )
+  ),
   columns = list(
     Type = colDef(filterable = TRUE),
     Name = colDef(filterable = TRUE, sticky = "left"),
     ISO3 = colDef(filterable = TRUE),
     year = colDef(filterable = TRUE), 
-    pop_jan_total = colDef(format = colFormat(separators = TRUE, digits = 0)),
-    pop_jul_total = colDef(format = colFormat(separators = TRUE, digits = 0)),
-    pop_jul_male = colDef(format = colFormat(separators = TRUE, digits = 0)),
-    pop_jul_female = colDef(format = colFormat(separators = TRUE, digits = 0)),
+    pop_jan_t = colDef(format = colFormat(separators = TRUE, digits = 0)),
+    pop_jul_t = colDef(format = colFormat(separators = TRUE, digits = 0)),
+    pop_jul_m = colDef(format = colFormat(separators = TRUE, digits = 0)),
+    pop_jul_f = colDef(format = colFormat(separators = TRUE, digits = 0)),
     pop_den = colDef(format = colFormat(separators = TRUE, digits = 1)),
     sex_ratio = colDef(format = colFormat(separators = TRUE, digits = 1)),
     median_age = colDef(format = colFormat(separators = TRUE, digits = 1)),
-    natural_change = colDef(format = colFormat(separators = TRUE, digits = 0)),
+    natural_chg = colDef(format = colFormat(separators = TRUE, digits = 0)),
     RNC = colDef(format = colFormat(separators = TRUE, digits = 3)),
-    pop_change = colDef(format = colFormat(separators = TRUE, digits = 0)),
+    pop_chg = colDef(format = colFormat(separators = TRUE, digits = 0)),
     PGR = colDef(format = colFormat(separators = TRUE, digits = 3)),
-    doubling_time = colDef(format = colFormat(separators = TRUE, digits = 2)),
+    doub_time = colDef(format = colFormat(separators = TRUE, digits = 2)),
     births = colDef(format = colFormat(separators = TRUE, digits = 0)),
     CBR = colDef(format = colFormat(separators = TRUE, digits = 3)),
     TFR = colDef(format = colFormat(separators = TRUE, digits = 3)),
     NRR = colDef(format = colFormat(separators = TRUE, digits = 3)),
-    deaths_total = colDef(format = colFormat(separators = TRUE, digits = 0)),
-    deaths_male = colDef(format = colFormat(separators = TRUE, digits = 0)),
-    deaths_female = colDef(format = colFormat(separators = TRUE, digits = 0)),
+    deaths_t = colDef(format = colFormat(separators = TRUE, digits = 0)),
+    deaths_m = colDef(format = colFormat(separators = TRUE, digits = 0)),
+    deaths_f = colDef(format = colFormat(separators = TRUE, digits = 0)),
     CDR = colDef(format = colFormat(separators = TRUE, digits = 3)),
-    life_exp_total = colDef(format = colFormat(separators = TRUE, digits = 1)),
-    life_exp_male = colDef(format = colFormat(separators = TRUE, digits = 1)),
-    life_exp_female = colDef(format = colFormat(separators = TRUE, digits = 1)),
-    infant_deaths = colDef(format = colFormat(separators = TRUE, digits = 0)),
-    IMR = colDef(format = colFormat(separators = TRUE, digits = 3)),
-    net_migrants = colDef(format = colFormat(separators = TRUE, digits = 0)),
+    life_exp_t = colDef(format = colFormat(separators = TRUE, digits = 1)),
+    life_exp_m = colDef(format = colFormat(separators = TRUE, digits = 1)),
+    life_exp_f = colDef(format = colFormat(separators = TRUE, digits = 1)),
+    inf_deaths = colDef(format = colFormat(separators = TRUE, digits = 0)),
+    IMR = colDef(format = colFormat(separators = TRUE, digits = 1)),
+    net_mig = colDef(format = colFormat(separators = TRUE, digits = 0)),
     NMR = colDef(format = colFormat(separators = TRUE, digits = 3))
   )
 )
 ```
 
-### Column {width="30%"}
+### Column {width="35%"}
 
-::: {.card title="변수 설명"}
+::: {.card title="변수 설명" style="font-size: 50%"}
 -   Name: 국가명
+
+-   ISO3: 국가식별코드(세자리 문자)
 
 -   year: 연도
 
--   pop_jan_total: 총인구수(1월 1일 기준)
+-   pop_jan_t: 총인구수(1월 1일 기준)
 
--   pop_jul_total: 총인구수(7월 1일 기준)
+-   pop_jul_t: 총인구수(7월 1일 기준)
 
--   pop_jul_male: 남성 총인구수(7월 1일 기준)
+-   pop_jul_m: 남성 총인구수(7월 1일 기준)
 
--   pop_jul_femal: 여성 총인구수(7월 1일 기준)
+-   pop_jul_f: 여성 총인구수(7월 1일 기준)
 
 -   pop_den: 인구밀도(1제곱킬로미터당 인구수)
 
@@ -110,15 +135,15 @@ reactable(
 
 -   median_age: 중위연령
 
--   natural_change: 자연변화수(출생아수 - 사망자수)
+-   natural_chg: 자연변화수(출생아수 - 사망자수)
 
 -   RNC: 자연변화율(rate of natural change)(단위: 인구 1,000명 당 자연증가수)
 
--   pop_change: 인구증감
+-   pop_chg: 인구증감
 
 -   PGR: 인구증감율(population growth rate)(단위: %)
 
--   dubling_time: 인구배가기간(인구가 배로 느는데 걸리는 시간) (단위: 년)
+-   doub_time: 인구배가기간(인구가 배로 느는데 걸리는 시간) (단위: 년)
 
 -   births: 출생아수
 
@@ -128,29 +153,27 @@ reactable(
 
 -   NRR: 순재생산율(net reproduction rate)(단위: 여성 1인당 생존 자녀수)
 
--   sex_ratio_birth: 출생성비(단위: 여아 100명당 남아)
+-   sex_ratio_b: 출생성비(단위: 여아 100명당 남아)
 
--   deaths_total: 사망자수
+-   deaths_t: 사망자수
 
--   deaths_male: 남성 사망자수
+-   deaths_m: 남성 사망자수
 
--   deaths_female: 여성 사망자수
+-   deaths_f: 여성 사망자수
 
 -   CDR: 조사망율(crude death rate)(단위: 인구 1,000명당 사망자수)
 
--   life_exp_total: 기대수명
+-   life_exp_t: 기대수명
 
--   life_exp_male: 남성 기대수명
+-   life_exp_m: 남성 기대수명
 
--   life_exp_female: 여성 기대수명
+-   life_exp_f: 여성 기대수명
 
--   infant_deaths: 사망한 영아수(출생 후 1년 이내 사망한 출생아)
+-   inf_deaths: 사망한 영아수(출생 후 1년 이내 사망한 출생아)
 
 -   IMR: 영아사망률(infant mortality rate)(생존 출생아 1,000명당 사망한 영아수)
 
--   net_migrants: 순이동자(전입자 - 전출자)
+-   net_mig: 순이동자(전입자 - 전출자)
 
 -   NMR: 순이동률(net migration rate)(단위: 인구 1,000명당 순이동자)
 :::
-
-
