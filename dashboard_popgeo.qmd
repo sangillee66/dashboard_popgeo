@@ -20,14 +20,14 @@ editor_options:
   chunk_output_type: console
 ---
 
-# WPP 2024
+# 인구 데이터
 
 ## Row
 
 ### Column {width="70%"}
 
 ```{r}
-#| title: 2024년 기준 국가별 주요 통계(World Population Prospects 2022)
+#| title: World Population Prospects 2024 주요 지표
 library(tidyverse)
 library(reactable)
 wpp_2024 <- read_rds("wpp_2024.rds")
@@ -38,6 +38,7 @@ wpp_2024_sel <- wpp_2024 |>
   # ) |>  
   select(
     Type = type,
+    ISO3 = ISO3,
     Name = region_name, 
     year, pop_jan_total, pop_jul_total, pop_jul_male, pop_jul_female,
     pop_den, sex_ratio, median_age, natural_change, RNC, pop_change,
@@ -55,6 +56,7 @@ reactable(
   columns = list(
     Type = colDef(filterable = TRUE),
     Name = colDef(filterable = TRUE, sticky = "left"),
+    ISO3 = colDef(filterable = TRUE),
     year = colDef(filterable = TRUE), 
     pop_jan_total = colDef(format = colFormat(separators = TRUE, digits = 0)),
     pop_jul_total = colDef(format = colFormat(separators = TRUE, digits = 0)),
