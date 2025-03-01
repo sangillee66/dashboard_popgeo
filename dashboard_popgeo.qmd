@@ -1,0 +1,185 @@
+---
+title: "인구지리학"
+author: 이상일(서울대학교 지리교육과 교수)
+format: 
+  dashboard:
+    logo: snu_logo_2.png
+    nav-buttons: 
+      - icon: house
+        href: https://sangillee.snu.ac.kr/
+        aria-label: Homepage
+      - icon: github
+        href: https://github.com/sangillee66
+        aria-label: GitHub
+      - icon: envelope
+        href: mailto:si_lee@snu.ac.kr
+        aria-label: Mail
+    scrolling: true
+editor: visual
+editor_options: 
+  chunk_output_type: console
+---
+
+# 임베딩
+
+## Row
+
+::: {.card title="KOSIS 통계놀이터"}
+###  {width="50%"}
+
+<iframe src="https://kosis.kr/edu/share.do?shareID=S0500_16" loading="lazy" style="width: 100%; height: 600px; border: 0px none;" allow="web-share; clipboard-write">
+
+</iframe>
+:::
+
+::: {.card title="통계지리정보서비스"}
+###  {width="50%"}
+
+<iframe src="https://sgis.kostat.go.kr/view/thematicMap/thematicMapMain?id=nLrqzDsxG720240721215144480nnqtvv3LsD" loading="lazy" style="width: 100%; height: 600px; border: 0px none;" allow="web-share; clipboard-write">
+
+</iframe>
+:::
+
+## Row
+
+::: {.card title="Our World in Data"}
+###  {width="50%"}
+
+<iframe src="https://ourworldindata.org/grapher/child-mortality?time=earliest..latest&amp;tab=chart" loading="lazy" style="width: 100%; height: 600px; border: 0px none;" allow="web-share; clipboard-write">
+
+</iframe>
+:::
+
+::: {.card title="동영상"}
+###  {width="50%"}
+
+{{< video https://www.youtube.com/watch?v=Ao0s-bnmvSY >}}
+:::
+
+## Row
+
+::: {.card title="인구감소지역 지정"}
+###  {width="50%"}
+
+<iframe src="https://www.mois.go.kr/frt/sub/a06/b06/populationDecline/screen.do" loading="lazy" style="width: 100%; height: 600px; border: 0px none;" allow="web-share; clipboard-write">
+
+</iframe>
+:::
+
+### Column {width="50%"}
+
+::: {.card title="신문기사"}
+## 지방소멸 관련 기사 모음
+
+-   [연합뉴스: \[지방소멸 경고등\] '황금그물의 섬 추자도' 어디로…15년 새 인구 반토막](https://www.yna.co.kr/view/AKR20240719128000056?input=1195m)
+
+-   [주간조선: ‘소멸 위험’ 부산, 문제는 ‘20대 여성’의 이탈](https://weekly.chosun.com/news/articleView.html?idxno=36034)
+
+-   [경기일보: '인구감소지역 규제'는 특례로 빼고…지방소멸위기 극복](https://www.kyeonggi.com/article/20240718580267)
+:::
+
+# 테이블
+
+## Row
+
+### Column {width="70%"}
+
+```{r}
+#| title: 2024년 기준 국가별 주요 통계(World Population Prospects 2022)
+library(tidyverse)
+library(DT)
+wpp_2022 <- read_rds("wpp_2022_new.rds")
+wpp_2022_2024 <- wpp_2022 |> 
+  filter(
+    year == 2024,
+    type == "Country/Area"
+  ) |>  
+  select(
+    Name = region_name, 
+    year, pop_jan_total, pop_jul_total, pop_jul_male, pop_jul_female,
+    pop_den, sex_ratio, median_age, natural_change, RNC, pop_change,
+    PGR, dubling_time, births, CBR, TFR, NRR, sex_ratio_birth, 
+    deaths_total, deaths_male, deaths_female, CDR, life_exp_total, 
+    life_exp_male, life_exp_female, infant_deaths, IMR, net_migrants,
+    NMR
+  )
+  
+datatable(wpp_2022_2024, filter = "top",
+          extensions = c("Buttons", "FixedColumns", "FixedHeader"),
+          options = list(
+            pageLength = 1000,
+            autoWidth = TRUE,
+            dom = "Bftip",
+            buttons = c("copy", "excel", "pdf", "print"),
+            dom = "t",
+            scrollX = TRUE,
+            fixedColumns = list(leftColumns = 2),
+            fixedHeader = TRUE
+          ))
+```
+
+### Column {width="30%"}
+
+::: {.card title="변수 설명"}
+-   Name: 국가명
+
+-   year: 연도
+
+-   pop_jan_total: 총인구수(1월 1일 기준)
+
+-   pop_jul_total: 총인구수(7월 1일 기준)
+
+-   pop_jul_male: 남성 총인구수(7월 1일 기준)
+
+-   pop_jul_femal: 여성 총인구수(7월 1일 기준)
+
+-   pop_den: 인구밀도(1제곱킬로미터당 인구수)
+
+-   sex_ratio: 성비(여성 100명당 남성 인구)
+
+-   median_age: 중위연령
+
+-   natural_change: 자연변화수(출생아수 - 사망자수)
+
+-   RNC: 자연변화율(rate of natural change)(단위: 인구 1,000명 당 자연증가수)
+
+-   pop_change: 인구증감
+
+-   PGR: 인구증감율(population growth rate)(단위: %)
+
+-   dubling_time: 인구배가기간(인구가 배로 느는데 걸리는 시간) (단위: 년)
+
+-   births: 출생아수
+
+-   CBR: 조출생율(crude birth rate)(단위: 인구 1,000명당 출생아수)
+
+-   TFR: 합계출산율(total fertility rate)(단위: 여성 1인당 평균 기대 출생아수)
+
+-   NRR: 순재생산율(net reproduction rate)(단위: 여성 1인당 생존 자녀수)
+
+-   sex_ratio_birth: 출생성비(단위: 여아 100명당 남아)
+
+-   deaths_total: 사망자수
+
+-   deaths_male: 남성 사망자수
+
+-   deaths_female: 여성 사망자수
+
+-   CDR: 조사망율(crude death rate)(단위: 인구 1,000명당 사망자수)
+
+-   life_exp_total: 기대수명
+
+-   life_exp_male: 남성 기대수명
+
+-   life_exp_female: 여성 기대수명
+
+-   infant_deaths: 사망한 영아수(출생 후 1년 이내 사망한 출생아)
+
+-   IMR: 영아사망률(infant mortality rate)(생존 출생아 1,000명당 사망한 영아수)
+
+-   net_migrants: 순이동자(전입자 - 전출자)
+
+-   NMR: 순이동률(net migration rate)(단위: 인구 1,000명당 순이동자)
+:::
+
+# 
