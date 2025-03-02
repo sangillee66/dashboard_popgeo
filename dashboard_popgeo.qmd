@@ -115,13 +115,15 @@ reactable(
 ### Column {width="35%"}
 
 ::: {.card title="변수 설명"}
+-   Type: 지역 유형(예: Country/Area, SDG region, Region, Subregion)
+
 -   Name: 국가명
 
 -   ISO3: 국가식별코드(세자리 문자)
 
 -   year: 연도
 
--   pop_jan_t: 총인구수(1월 1일 기준)
+-   pop_jan_t: 총r인구수(1월 1일 기준)
 
 -   pop_jul_t: 총인구수(7월 1일 기준)
 
