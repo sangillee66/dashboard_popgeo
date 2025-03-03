@@ -85,7 +85,7 @@ reactable(
     pop_jul_t = colDef(format = colFormat(separators = TRUE, digits = 0)),
     pop_jul_m = colDef(format = colFormat(separators = TRUE, digits = 0)),
     pop_jul_f = colDef(format = colFormat(separators = TRUE, digits = 0)),
-    pop_den = colDef(format = colFormat(separators = TRUE, digits = 1)),
+    pop_den = colDef(format = colFormat(separators = TRUE, digits = 0)),
     sex_ratio = colDef(format = colFormat(separators = TRUE, digits = 1)),
     median_age = colDef(format = colFormat(separators = TRUE, digits = 1)),
     natural_chg = colDef(format = colFormat(separators = TRUE, digits = 0)),
