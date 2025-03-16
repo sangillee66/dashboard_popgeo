@@ -236,8 +236,8 @@ tm_shape(countries.m.region) + tm_polygons(
   popup.vars = c(
     "ISO3" = "ISO_A3", 
     "NAME" = "NAME_LONG",
-    "UN Subregion" = "New_UN_All_Subregion_NM",
-    "UN Region" = "New_UN_Region_NM",
+    "Subregion" = "New_UN_All_Subregion_NM",
+    "Region" = "New_UN_Region_NM",
     "SDG Region" = "New_New_Sub_SDG_NM"
     )
   ) +
