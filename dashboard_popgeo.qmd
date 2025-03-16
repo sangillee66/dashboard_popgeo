@@ -240,7 +240,10 @@ tm_shape(countries.m.region) + tm_polygons(
     "UN Region" = "New_UN_Region_NM",
     "SDG Region" = "New_New_Sub_SDG_NM"
     )
-  ) 
+  ) +
+  tm_basemap(
+    c("Esri.NatGeoWorldMap", "Esri.WorldGrayCanvas", "OpenStreetMap", "Esri.WorldImagery")
+  )
 ```
 
 ### Column {width="40%"}
@@ -274,6 +277,7 @@ tm_shape(SIGUNGU1.shp) + tm_fill(
   ) 
   ) + tm_borders() +
   tm_shape(SIDO_Polyline.shp) + tm_lines(col = "black", lwd = 2)
+
 ```
 
 # 인구 성장
