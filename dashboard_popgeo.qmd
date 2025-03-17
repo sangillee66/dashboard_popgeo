@@ -131,7 +131,7 @@ reactable(
 
 -   year: 연도
 
--   pop_jan_t: 총r인구수(1월 1일 기준)
+-   pop_jan_t: 총인구수(1월 1일 기준)
 
 -   pop_jul_t: 총인구수(7월 1일 기준)
 
