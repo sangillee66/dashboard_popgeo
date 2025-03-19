@@ -282,6 +282,24 @@ tm_shape(SIGUNGU1.shp) + tm_fill(
 
 # 인구 성장
 
+## 이상일
+
+::: {.card title="세계의 인구 성장"}
+###  {width="50%"}
+
+```{=html}
+<iframe src="https://ourworldindata.org/explorers/population-and-demography?facet=none&country=OWID_WRL~Africa+%28UN%29~Asia+%28UN%29~Northern+America+%28UN%29~Latin+America+and+the+Caribbean+%28UN%29~Europe+%28UN%29&hideControls=true&indicator=Population&Sex=Both+sexes&Age=Total&Projection+scenario=None&tab=chart" loading="lazy" style="width: 100%; height: 600px; border: 0px none;" allow="web-share; clipboard-write"></iframe>
+```
+:::
+
+::: {.card title="세계의 인구성장률"}
+###  {width="50%"}
+
+```{=html}
+<iframe src="https://ourworldindata.org/grapher/population-growth-rates?tab=chart" loading="lazy" style="width: 100%; height: 600px; border: 0px none;" allow="web-share; clipboard-write"></iframe>
+```
+:::
+
 # 인구 분포
 
 # 인구 구조
