@@ -288,7 +288,7 @@ tm_shape(SIGUNGU1.shp) + tm_fill(
 ###  {width="50%"}
 
 ```{=html}
-<iframe src="https://ourworldindata.org/explorers/population-and-demography?facet=none&country=OWID_WRL~Africa+%28UN%29~Asia+%28UN%29~Northern+America+%28UN%29~Latin+America+and+the+Caribbean+%28UN%29~Europe+%28UN%29&hideControls=true&indicator=Population&Sex=Both+sexes&Age=Total&Projection+scenario=None&tab=chart" loading="lazy" style="width: 100%; height: 600px; border: 0px none;" allow="web-share; clipboard-write"></iframe>
+<iframe src="https://ourworldindata.org/explorers/population-and-demography?indicator=Population&Sex=Both+sexes&Age=Total&Projection+scenario=Medium&country=CHN~IND~USA~IDN~PAK~NGA~BRA~JPN&hideControls=true&tab=chart" loading="lazy" style="width: 100%; height: 600px; border: 0px none;" allow="web-share; clipboard-write"></iframe>
 ```
 :::
 
