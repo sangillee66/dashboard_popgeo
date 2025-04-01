@@ -348,7 +348,38 @@ data.sel |>
   e_charts(Year) |> 
   e_line(Population) |> 
   e_color(col_vector) |> 
-  e_tooltip(trigger = "axis")
+  e_tooltip(
+    trigger = "axis",
+  formatter = htmlwidgets::JS("
+    function (params) {
+      const year = params[0].axisValue;
+
+      // 숫자 포맷터: 쉼표 추가 (한국식)
+      const formatter = new Intl.NumberFormat('ko-KR');
+
+      // 인구수 추출
+      let data = params.map(p => {
+        let pop = (Array.isArray(p.value)) ? p.value[1] : p.value;
+        return {
+          name: p.seriesName,
+          value: pop,
+          marker: p.marker
+        };
+      });
+
+      // 정렬
+      data.sort((a, b) => b.value - a.value);
+
+      // 툴팁 문자열 생성
+      let result = '<strong>' + year + '년</strong><br/>';
+      data.forEach(d => {
+        result += d.marker + d.name + ': ' + formatter.format(d.value) + '명<br/>';
+      });
+
+      return result;
+    }
+  ")
+  )
 
 ```
 
