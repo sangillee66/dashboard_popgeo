@@ -395,7 +395,95 @@ data.sel |>
 ```
 :::
 
+### 카토그램 {.tabset}
 
+#### 1990년
+
+```{r}
+#| results: hide
+
+library(tidyverse)
+library(readxl)
+library(sf)
+library(tmap)
+library(cartogramR)
+
+my.data <- read_rds("D:/My R/Population Geography/wpp_2024.rds")
+
+countries.m <- st_read("D:/My R/World Data Manupulation/NaturalEarth/new_2_ne_50m_admin_0_countries.shp") 
+
+world.region.code <- read_excel("D:/My R/Population Geography/0 Population Data/World_Region_Code.xlsx", sheet = 1, col_names = TRUE)
+
+countries.m <- countries.m |> 
+  left_join(
+    world.region.code |> dplyr::select(3:13, 17), 
+    join_by(ISO_N3_CD == `M49 Code`)
+  )
+
+crs_robin <- st_crs("+proj=robin +lon_0=0 +x_0=0 +y_0=0 +ellps=WGS84 +datum=WGS84 +units=m +no_defs +towgs84=0,0,0")
+
+countries.m.robin <- st_transform(countries.m, crs = crs_robin)
+
+type.sel <- "Country/Area"
+year.sel <- 1990
+var.sel <- "pop_jul_total"
+
+data.sel <- my.data |> 
+  filter(
+    type %in% type.sel,
+    year %in% year.sel
+  )
+
+New.World <- countries.m.robin |> 
+  left_join(
+    data.sel,
+    join_by(ISO_N3_CD == location_code)
+  ) |> 
+  filter(
+    !is.na(pop_jul_total)
+  ) 
+
+carto.shp <- cartogramR(New.World, count = var.sel) |> as.sf()
+
+SDG.region.name <- unique(carto.shp$New_New_Sub_SDG_NM)
+SDG.region.name <- SDG.region.name[c(5, 3, 1, 7, 6, 4, 2)]
+
+carto.shp <- carto.shp |> 
+  mutate(
+    New_SDG_NM = fct(New_New_Sub_SDG_NM, levels = SDG.region.name)
+  )
+
+```
+
+```{r}
+#| fig-height: 8.4
+#| fig-width: 18
+#| fig-dpi: 600
+
+tmap_mode("plot")
+my.title <- paste0("World Population Distribution, ", year.sel)
+my.map <- tm_shape(carto.shp) +
+  tm_polygons(
+    col = "New_SDG_NM",
+    palette = "Set3",
+    legend.show = TRUE,
+    lwd = 1.5,
+    title = "SDG Regions",
+    popup.vars = c(
+    "국가명" = "SOVEREIGNT",
+    "인구수" = "pop_jul_total",
+    "인구 밀도" = "pop_den"
+    )
+  ) +
+  tm_legend(legend.format = list(digits = 1), legend.title.size = 1, legend.text.size = 0.8, legend.position = c("left", "bottom"), legend.frame = FALSE, legend.bg.color = "gray99") +
+  tm_layout(frame = TRUE, main.title = my.title, main.title.size = 2.5, main.title.position = "center",
+            bg.color = "White", inner.margins = c(0.01, 0.01, 0.02, 0.01)) +
+  tm_credits("SANG-IL LEE, Geography Education at SNU, 2025", position = c(0.81, 0.02), size = 0.8)
+my.map
+```
+
+
+#### 2025년
 
 ```{r}
 #| results: hide
@@ -453,10 +541,177 @@ carto.shp <- carto.shp |>
 
 ```
 
-###
+```{r}
+#| fig-height: 8.4
+#| fig-width: 18
+#| fig-dpi: 600
+
+tmap_mode("plot")
+my.title <- paste0("World Population Distribution, ", year.sel)
+my.map <- tm_shape(carto.shp) +
+  tm_polygons(
+    col = "New_SDG_NM",
+    palette = "Set3",
+    legend.show = TRUE,
+    lwd = 1.5,
+    title = "SDG Regions",
+    popup.vars = c(
+    "국가명" = "SOVEREIGNT",
+    "인구수" = "pop_jul_total",
+    "인구 밀도" = "pop_den"
+    )
+  ) +
+  tm_legend(legend.format = list(digits = 1), legend.title.size = 1, legend.text.size = 0.8, legend.position = c("left", "bottom"), legend.frame = FALSE, legend.bg.color = "gray99") +
+  tm_layout(frame = TRUE, main.title = my.title, main.title.size = 2.5, main.title.position = "center",
+            bg.color = "White", inner.margins = c(0.01, 0.01, 0.02, 0.01)) +
+  tm_credits("SANG-IL LEE, Geography Education at SNU, 2025", position = c(0.81, 0.02), size = 0.8)
+my.map
+```
+
+#### 2055년
 
 ```{r}
-#| title: "세계의 인구 분포 카토그램(2025년)"
+#| results: hide
+
+library(tidyverse)
+library(readxl)
+library(sf)
+library(tmap)
+library(cartogramR)
+
+my.data <- read_rds("D:/My R/Population Geography/wpp_2024.rds")
+
+countries.m <- st_read("D:/My R/World Data Manupulation/NaturalEarth/new_2_ne_50m_admin_0_countries.shp") 
+
+world.region.code <- read_excel("D:/My R/Population Geography/0 Population Data/World_Region_Code.xlsx", sheet = 1, col_names = TRUE)
+
+countries.m <- countries.m |> 
+  left_join(
+    world.region.code |> dplyr::select(3:13, 17), 
+    join_by(ISO_N3_CD == `M49 Code`)
+  )
+
+crs_robin <- st_crs("+proj=robin +lon_0=0 +x_0=0 +y_0=0 +ellps=WGS84 +datum=WGS84 +units=m +no_defs +towgs84=0,0,0")
+
+countries.m.robin <- st_transform(countries.m, crs = crs_robin)
+
+type.sel <- "Country/Area"
+year.sel <- 2055
+var.sel <- "pop_jul_total"
+
+data.sel <- my.data |> 
+  filter(
+    type %in% type.sel,
+    year %in% year.sel
+  )
+
+New.World <- countries.m.robin |> 
+  left_join(
+    data.sel,
+    join_by(ISO_N3_CD == location_code)
+  ) |> 
+  filter(
+    !is.na(pop_jul_total)
+  ) 
+
+carto.shp <- cartogramR(New.World, count = var.sel) |> as.sf()
+
+SDG.region.name <- unique(carto.shp$New_New_Sub_SDG_NM)
+SDG.region.name <- SDG.region.name[c(5, 3, 1, 7, 6, 4, 2)]
+
+carto.shp <- carto.shp |> 
+  mutate(
+    New_SDG_NM = fct(New_New_Sub_SDG_NM, levels = SDG.region.name)
+  )
+
+```
+
+```{r}
+#| fig-height: 8.4
+#| fig-width: 18
+#| fig-dpi: 600
+
+tmap_mode("plot")
+my.title <- paste0("World Population Distribution, ", year.sel)
+my.map <- tm_shape(carto.shp) +
+  tm_polygons(
+    col = "New_SDG_NM",
+    palette = "Set3",
+    legend.show = TRUE,
+    lwd = 1.5,
+    title = "SDG Regions",
+    popup.vars = c(
+    "국가명" = "SOVEREIGNT",
+    "인구수" = "pop_jul_total",
+    "인구 밀도" = "pop_den"
+    )
+  ) +
+  tm_legend(legend.format = list(digits = 1), legend.title.size = 1, legend.text.size = 0.8, legend.position = c("left", "bottom"), legend.frame = FALSE, legend.bg.color = "gray99") +
+  tm_layout(frame = TRUE, main.title = my.title, main.title.size = 2.5, main.title.position = "center",
+            bg.color = "White", inner.margins = c(0.01, 0.01, 0.02, 0.01)) +
+  tm_credits("SANG-IL LEE, Geography Education at SNU, 2025", position = c(0.81, 0.02), size = 0.8)
+my.map
+```
+
+#### 2100년
+
+```{r}
+#| results: hide
+
+library(tidyverse)
+library(readxl)
+library(sf)
+library(tmap)
+library(cartogramR)
+
+my.data <- read_rds("D:/My R/Population Geography/wpp_2024.rds")
+
+countries.m <- st_read("D:/My R/World Data Manupulation/NaturalEarth/new_2_ne_50m_admin_0_countries.shp") 
+
+world.region.code <- read_excel("D:/My R/Population Geography/0 Population Data/World_Region_Code.xlsx", sheet = 1, col_names = TRUE)
+
+countries.m <- countries.m |> 
+  left_join(
+    world.region.code |> dplyr::select(3:13, 17), 
+    join_by(ISO_N3_CD == `M49 Code`)
+  )
+
+crs_robin <- st_crs("+proj=robin +lon_0=0 +x_0=0 +y_0=0 +ellps=WGS84 +datum=WGS84 +units=m +no_defs +towgs84=0,0,0")
+
+countries.m.robin <- st_transform(countries.m, crs = crs_robin)
+
+type.sel <- "Country/Area"
+year.sel <- 2100
+var.sel <- "pop_jul_total"
+
+data.sel <- my.data |> 
+  filter(
+    type %in% type.sel,
+    year %in% year.sel
+  )
+
+New.World <- countries.m.robin |> 
+  left_join(
+    data.sel,
+    join_by(ISO_N3_CD == location_code)
+  ) |> 
+  filter(
+    !is.na(pop_jul_total)
+  ) 
+
+carto.shp <- cartogramR(New.World, count = var.sel) |> as.sf()
+
+SDG.region.name <- unique(carto.shp$New_New_Sub_SDG_NM)
+SDG.region.name <- SDG.region.name[c(5, 3, 1, 7, 6, 4, 2)]
+
+carto.shp <- carto.shp |> 
+  mutate(
+    New_SDG_NM = fct(New_New_Sub_SDG_NM, levels = SDG.region.name)
+  )
+
+```
+
+```{r}
 #| fig-height: 8.4
 #| fig-width: 18
 #| fig-dpi: 600
