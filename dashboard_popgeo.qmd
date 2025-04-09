@@ -395,7 +395,7 @@ data.sel |>
 ```
 :::
 
-### Column
+
 
 ```{r}
 #| results: hide
@@ -411,15 +411,6 @@ my.data <- read_rds("D:/My R/Population Geography/wpp_2024.rds")
 countries.m <- st_read("D:/My R/World Data Manupulation/NaturalEarth/new_2_ne_50m_admin_0_countries.shp") 
 
 world.region.code <- read_excel("D:/My R/Population Geography/0 Population Data/World_Region_Code.xlsx", sheet = 1, col_names = TRUE)
-```
-
-```{r}
-#| title: "세계 인구 분포 카토그램(2025년)"
-#| fig-height: 8.4
-#| fig-width: 18
-#| fig-dpi: 600
-#| warning: false
-#| message: false
 
 countries.m <- countries.m |> 
   left_join(
@@ -459,6 +450,17 @@ carto.shp <- carto.shp |>
   mutate(
     New_SDG_NM = fct(New_New_Sub_SDG_NM, levels = SDG.region.name)
   )
+
+```
+
+###
+
+```{r}
+#| title: "세계의 인구 분포 카토그램(2025년)"
+#| fig-height: 8.4
+#| fig-width: 18
+#| fig-dpi: 600
+
 tmap_mode("plot")
 my.title <- paste0("World Population Distribution, ", year.sel)
 my.map <- tm_shape(carto.shp) +
@@ -480,6 +482,7 @@ my.map <- tm_shape(carto.shp) +
   tm_credits("SANG-IL LEE, Geography Education at SNU, 2025", position = c(0.81, 0.02), size = 0.8)
 my.map
 ```
+
 
 # 인구 구조
 
