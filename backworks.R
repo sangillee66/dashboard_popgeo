@@ -116,3 +116,175 @@ tm_shape(SIGUNGU1.shp) + tm_fill(
   tm_shape(SIDO_Polyline.shp) + tm_lines(col = "black", lwd = 2)
 
 
+# 우리나라 인구 피라미드 애니메이션 ------------------------------------------------------
+
+# 데이터
+my.age.sex.data.one.80plus <- read_excel("D:/My R/Korea Census Data Manipulation/4 Population Projections/2022 기준/Nation_Age_Sex_Proj_One_80Plus_1960_2072.xlsx", sheet = 1)
+my.age.sex.data.one.100plus <- read_excel("D:/My R/Korea Census Data Manipulation/4 Population Projections/2022 기준/Nation_Age_Sex_Proj_One_100Plus_2000_2072.xlsx", sheet = 1)
+
+age_sex_data <- my.age.sex.data.one.100plus |> 
+  pivot_longer(
+    cols = `2000`:`2072`,
+    names_to = "Year",
+    values_to = "Pop"
+  ) |> 
+  mutate(
+    Year = as.integer(Year),
+    Ages = as.character(parse_number(Ages)),
+    Gender = case_match(
+      Gender,
+      "전체"~"Total",
+      "남자"~"Male",
+      "여자"~"Female"
+    ),
+    Ages = ifelse(Ages == 100, "100+", Ages)
+  ) |> 
+  filter(
+    Gender != "Total"
+  )
+
+# 기본 인구 피라미드
+
+data_sel <- age_sex_data |> 
+  filter(
+    Year == 2025, 
+    Gender != "Total"
+  ) |> 
+  mutate(
+    Pop = Pop * 100/ sum(Pop),
+    .by = Year
+  )
+  
+ggplot(data = data_sel, aes(x = fct(Ages, levels = unique(Ages)), y = ifelse(Gender == "Male", -Pop, Pop), fill = fct(Gender, levels = c("Male", "Female")))) + 
+  geom_bar(stat = "identity", alpha = 1) + 
+  scale_x_discrete(breaks = unique(data_sel$Ages)[seq(1, 101, 5)], labels = unique(data_sel$Ages)[seq(1, 101, 5)]) +
+  scale_y_continuous(labels = abs) +
+  coord_flip() +
+  scale_fill_manual(values = c("#80b1d3", "#fb8072")) +
+  theme_bw() +
+  theme(
+    legend.position = "none"
+  ) +
+  labs(x = "Ages", y = "Population (%)")
+
+# gganimate 패키지를 활용하는 방법
+
+data_sel <- age_sex_data |> 
+  filter(
+    Gender != "Total"
+  ) |> 
+  mutate(
+    Pop = Pop * 100/ sum(Pop),
+    .by = Year
+  )
+
+library(gganimate)
+
+ggplot(data = data_sel, aes(x = fct(Ages, levels = unique(Ages)), y = ifelse(Gender == "Male", -Pop, Pop), fill = fct(Gender, levels = c("Male", "Female")))) + 
+  geom_bar(stat = "identity", alpha = 1) + 
+  scale_x_discrete(breaks = unique(data_sel$Ages)[seq(1, 101, 5)], labels = unique(data_sel$Ages)[seq(1, 101, 5)]) +
+  scale_y_continuous(labels = abs) +
+  coord_flip() +
+  scale_fill_manual(values = c("#80b1d3", "#fb8072")) +
+  theme_bw() +
+  theme(
+    plot.title = element_text(size = 30, hjust = 0.5),
+    axis.title = element_text(size = 20, face = "plain"),
+    axis.text.x = element_text(size = 14),
+    axis.text.y = element_text(size = 14),
+    legend.position = "none",
+    aspect.ratio = 1
+  ) +
+  labs(title = "Year: {frame_time}", x = "Ages", y = "Population (%)") + 
+  transition_time(Year) +
+  enter_fade() -> P
+
+pop_pyramid_kr <- animate(P, rendere = gifski_renderer(loop=TRUE), width = 1200, height = 1200, dpi = 600)
+anim_save("pop_pyramid_kr.gif", animation = pop_pyramid_kr)  
+
+# plotly를 활용하는 방법
+
+library(plotly)
+
+data_sel <- age_sex_data |> 
+  filter(
+    # Year == 2025,
+    Gender != "Total"
+  ) |> 
+  mutate(
+    Pop = Pop * 100/ sum(Pop),
+    .by = Year
+  )
+
+data_sel |> 
+  mutate(
+    Ages = fct(Ages, levels = unique(Ages)), 
+    Pop = if_else(Gender == "Male", -Pop, Pop),
+  ) |> 
+  plot_ly(
+    x = ~Pop, y = ~Ages, color = ~Gender 
+  ) |> 
+  add_bars(orientation = 'h', hoverinfo = 'text') |> 
+  layout(
+    bargap = 0.1,
+    barmode = "relative",
+    xaxis = list(
+      tickvals = c(-1, -0.5, 0, 0.5, 1), 
+      ticktext = as.character(abs(c(-1, 0.5, 0, 0.5, 1)))
+    ),
+    legend = list(
+      x = 0.85, y = 0.95
+    )
+  ) 
+
+
+
+data_sel_proc <- data_sel |> 
+  mutate(
+    Ages = fct(Ages, levels = unique(Ages)), 
+    Pop = if_else(Gender == "Male", -Pop, Pop)
+  ) |> 
+  pivot_wider(names_from = Gender, values_from = Pop) |> 
+  mutate(
+    hover_text = paste0(
+      "Age Group: ", Ages, "<br>",
+      "Male: ", formatC(abs(Male), format = "f", digits = 2, big.mark = ","), "<br>",
+      "Female: ", formatC(Female, format = "f", digits = 2, big.mark = ",")
+    )
+  )
+
+plot_ly() |>
+  add_trace(
+    data = data_sel_proc,
+    x = ~Male, y = ~Ages,
+    type = 'bar', name = 'Male',
+    orientation = 'h',
+    marker = list(color = "#b3de69"),
+    customdata = data_sel_proc$hover_text,
+    hovertemplate = "%{customdata}<extra></extra>",
+    textposition = "none"
+  ) |>
+  add_trace(
+    data = data_sel_proc,
+    x = ~Female, y = ~Ages,
+    type = 'bar', name = 'Female',
+    orientation = 'h',
+    marker = list(color = "#fdb462"),
+    customdata = data_sel_proc$hover_text,
+    hovertemplate = "%{customdata}<extra></extra>",
+    textposition = "none"
+  ) |>
+  layout(
+    barmode = "relative",
+    bargap = 0.1,
+    xaxis = list(
+      title = "Population",
+      tickvals = c(-1, -0.5, 0, 0.5, 1),
+      ticktext = as.character(abs(c(-1, 0.5, 0, 0.5, 1)))
+    ),
+    yaxis = list(title = "Age Group"),
+    legend = list(
+      x = 0.85, y = 0.95
+    ),
+    hovermode = "y unified"  # 핵심: y축 기준 통합
+  )

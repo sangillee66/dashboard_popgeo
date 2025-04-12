@@ -482,7 +482,6 @@ my.map <- tm_shape(carto.shp) +
 my.map
 ```
 
-
 #### 2025년
 
 ```{r}
@@ -738,8 +737,118 @@ my.map <- tm_shape(carto.shp) +
 my.map
 ```
 
-
 # 인구 구조
+
+## Row
+
+::: {.card title="세계의 인구 구조"}
+### 
+
+```{=html}
+<iframe src="https://ourworldindata.org/explorers/population-and-demography?time=2100&indicator=Age+structure&Sex=Both+sexes&Age=Total+dependency+ratio&Projection+scenario=Medium&country=CHN~IND~USA~IDN~PAK~NGA~BRA~JPN&hideControls=true&tab=chart" loading="lazy" style="width: 100%; height: 600px; border: 0px none;" allow="web-share; clipboard-write"></iframe>
+```
+:::
+
+### Column
+
+```{r}
+#| title: "한국의 인구 피라미드, 2000~2072"
+
+library(tidyverse)
+library(plotly)
+my.age.sex.data.one.100plus <- read_excel("D:/My R/Korea Census Data Manipulation/4 Population Projections/2022 기준/Nation_Age_Sex_Proj_One_100Plus_2000_2072.xlsx", sheet = 1)
+
+age_sex_data <- my.age.sex.data.one.100plus |> 
+  pivot_longer(
+    cols = `2000`:`2072`,
+    names_to = "Year",
+    values_to = "Pop"
+  ) |> 
+  mutate(
+    Year = as.integer(Year),
+    Ages = as.character(parse_number(Ages)),
+    Gender = case_match(
+      Gender,
+      "전체"~"Total",
+      "남자"~"Male",
+      "여자"~"Female"
+    ),
+    Ages = ifelse(Ages == 100, "100+", Ages)
+  ) |> 
+  filter(
+    Gender != "Total"
+  )
+
+data_sel <- age_sex_data |> 
+  filter(
+    # Year == 2025,
+    Gender != "Total"
+  ) |> 
+  mutate(
+    Pop = Pop * 100/ sum(Pop),
+    .by = Year
+  )
+
+# 전처리: 남성은 음수로
+data_proc <- data_sel |> 
+  mutate(
+    Gender = factor(Gender, levels = c("Male", "Female")),
+    Ages = fct(Ages, levels = unique(Ages)),
+    Pop = if_else(Gender == "Male", -Pop, Pop)
+  )
+
+# 남성과 여성 데이터 분리
+male_data <- filter(data_proc, Gender == "Male")
+female_data <- filter(data_proc, Gender == "Female")
+
+# plot 생성
+plot_ly() %>%
+  add_trace(
+    data = male_data,
+    x = ~Pop, y = ~Ages,
+    type = "bar",
+    name = "Male",
+    orientation = "h",
+    marker = list(color = "#8da0cb"),
+    frame = ~Year,
+    text = ~paste("Year:", Year, "<br>Age:", Ages, "<br>Male:", formatC(abs(Pop), format = "f", digits = 3, big.mark = ",")),
+    hoverinfo = "text",
+    textposition = "none" 
+  ) |> 
+  add_trace(
+    data = female_data,
+    x = ~Pop, y = ~Ages,
+    type = "bar",
+    name = "Female",
+    orientation = "h",
+    marker = list(color = "#e78ac3"),
+    frame = ~Year,
+    text = ~paste("Year:", Year, "<br>Age:", Ages, "<br>Female:", formatC(abs(Pop), format = "f", digits = 3, big.mark = ",")),
+    hoverinfo = "text", 
+    textposition = "none" 
+  ) %>%
+  layout(
+    barmode = "relative",
+    bargap = 0.1,
+    hovermode = "y unified",
+    legend = list(x = 0.85, y = 0.95),
+    xaxis = list(
+      title = "Population",
+      tickvals = seq(-1, 1, by = 0.5),
+      ticktext = as.character(abs(seq(-1, 1, by = 0.5)))
+    ),
+    yaxis = list(title = "Age Group")
+  ) |> 
+  config(
+    modeBarButtonsToRemove = list(
+      "zoom2d", "pan2d", "select2d", "lasso2d",
+      "zoomIn2d", "zoomOut2d", "autoScale2d", "resetScale2d",
+      "hoverClosestCartesian", "hoverCompareCartesian",
+      "toggleSpikelines"
+    ),
+    displaylogo = FALSE  # Plotly 로고도 제거
+  )
+```
 
 # 인구 동태
 
