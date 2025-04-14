@@ -370,3 +370,74 @@ plot_ly() %>%
     frame = 1000, transition = 500, redraw = FALSE
   ) %>%
   animation_slider(currentvalue = list(prefix = "Year: "))
+
+# 혜민이 도움으로 완성
+
+# plotly를 활용하는 방법
+
+library(plotly)
+
+data_sel <- age_sex_data |> 
+  filter(
+    Gender != "Total"
+  ) |> 
+  mutate(
+    Pop_r = Pop * 100/ sum(Pop),
+    .by = Year
+  ) |> 
+  mutate(
+    Ages = if_else(Ages == "100+", "100", Ages)
+  )
+
+data_sel |> 
+  mutate(
+    Ages = fct(Ages, levels = unique(Ages)), 
+    Gender = fct(Gender, levels = c("Male", "Female")),
+    Pop_r = if_else(Gender == "Male", -Pop_r, Pop_r),
+  ) |> 
+  plot_ly(
+    x = ~Pop_r, 
+    y = ~Ages, 
+    color = ~Gender, 
+    frame = ~Year
+  ) |> 
+  add_bars(
+    color = ~Gender, colors = c("#8da0cb", "#e78ac3"),
+    orientation = 'h', 
+    customdata = abs(data_sel$Pop),
+    hovertemplate = paste(
+      "%{customdata:,}"
+    ) 
+  ) |> 
+  layout(
+    bargap = 0.1,
+    barmode = "relative",
+    xaxis = list(
+      title = "Population (%)",
+      tickvals = c(-1, -0.5, 0, 0.5, 1),
+      ticktext = as.character(abs(c(-1, 0.5, 0, 0.5, 1)))
+    ),
+    yaxis = list(
+      title = "Ages",
+      tickvals = unique(data_sel$Ages)[seq(1, 101, 5)],
+      ticktext = c(unique(data_sel$Ages)[seq(1, 100, 5)], "100+")
+    ),
+    legend = list(
+      x = 0.85, y = 0.95,
+      traceorder = "reversed"
+    ),
+    margin = list(l = 75, r = 75, t = 75, b = 75),
+    hovermode = "y unified",
+    hoverlabel = list(bgcolor = "white", font = list(size = 12, family = "Pretendard Medium")),
+    bargap = 0.1, barmode = "overlay"
+  ) |> 
+  config(
+    displaylogo = FALSE,  # plotly 로고 제거
+    modeBarButtonsToRemove = c(
+      "zoom2d", "pan2d", "select2d", "lasso2d",
+      "zoomIn2d", "zoomOut2d", "autoScale2d", "resetScale2d",
+      "hoverClosestCartesian", "hoverCompareCartesian",
+      "toggleSpikelines", "resetViews", "sendDataToCloud"
+    )
+  ) |> 
+  animation_slider(currentvalue = list(prefix = "Year: "))
