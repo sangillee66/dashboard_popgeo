@@ -288,7 +288,7 @@ tm_shape(SIGUNGU1.shp) + tm_fill(
 ###  {width="50%"}
 
 ```{=html}
-<iframe src="https://ourworldindata.org/explorers/population-and-demography?indicator=Population&Sex=Both+sexes&Age=Total&Projection+scenario=Medium&country=CHN~IND~USA~IDN~PAK~NGA~BRA~JPN&hideControls=true&tab=chart" loading="lazy" style="width: 100%; height: 600px; border: 0px none;" allow="web-share; clipboard-write"></iframe>
+<iframe src="https://ourworldindata.org/explorers/population-and-demography?indicator=Population&Sex=Both+sexes&Age=Total&Projection+scenario=Medium&country=Asia+%28UN%29~Europe+%28UN%29~Africa+%28UN%29~Oceania+%28UN%29~Northern+America+%28UN%29~Latin+America+and+the+Caribbean+%28UN%29~KOR~OWID_WRL&hideControls=true&tab=chart" loading="lazy" style="width: 100%; height: 600px; border: 0px none;" allow="web-share; clipboard-write"></iframe>
 ```
 :::
 
@@ -296,7 +296,7 @@ tm_shape(SIGUNGU1.shp) + tm_fill(
 ###  {width="50%"}
 
 ```{=html}
-<iframe src="https://ourworldindata.org/explorers/population-and-demography?indicator=Population+growth+rate&Sex=Both+sexes&Age=Total&Projection+scenario=Medium&country=CHN~IND~USA~IDN~PAK~NGA~BRA~JPN&hideControls=true&tab=chart" loading="lazy" style="width: 100%; height: 600px; border: 0px none;" allow="web-share; clipboard-write"></iframe>
+<iframe src="https://ourworldindata.org/explorers/population-and-demography?indicator=Annual+population+change&Sex=Both+sexes&Age=Total&Projection+scenario=Medium&country=Asia+%28UN%29~Europe+%28UN%29~Africa+%28UN%29~Oceania+%28UN%29~Northern+America+%28UN%29~Latin+America+and+the+Caribbean+%28UN%29~KOR~OWID_WRL&hideControls=true&tab=chart" loading="lazy" style="width: 100%; height: 600px; border: 0px none;" allow="web-share; clipboard-write"></iframe>
 ```
 :::
 
@@ -391,13 +391,21 @@ data.sel |>
 ### 
 
 ```{=html}
-<iframe src="https://ourworldindata.org/explorers/population-and-demography?indicator=Population+density&Sex=Both+sexes&Age=Total&Projection+scenario=Medium&country=CHN~IND~USA~IDN~PAK~NGA~BRA~JPN&hideControls=true&tab=chart" loading="lazy" style="width: 100%; height: 600px; border: 0px none;" allow="web-share; clipboard-write"></iframe>
+<iframe src="https://ourworldindata.org/explorers/population-and-demography?country=Asia+%28UN%29~Europe+%28UN%29~Africa+%28UN%29~Oceania+%28UN%29~Northern+America+%28UN%29~Latin+America+and+the+Caribbean+%28UN%29~KOR~OWID_WRL&indicator=Population+density&Sex=Both+sexes&Age=Total&Projection+scenario=Medium&hideControls=true&tab=chart" loading="lazy" style="width: 100%; height: 600px; border: 0px none;" allow="web-share; clipboard-write"></iframe>
 ```
 :::
 
-### 카토그램 {.tabset}
+::: {.card title="세계의 도시화율"}
+### 
 
-#### 1990년
+```{=html}
+<iframe src="https://ourworldindata.org/grapher/share-of-population-urban?tab=chart&country=OWID_LIC~OWID_HIC~Middle-income+countries~OWID_LMC~OWID_UMC~KOR~OWID_WRL" loading="lazy" style="width: 100%; height: 600px; border: 0px none;" allow="web-share; clipboard-write"></iframe>
+```
+:::
+
+## Cartograms {.tabset}
+
+### 1990년
 
 ```{r}
 #| results: hide
@@ -482,7 +490,7 @@ my.map <- tm_shape(carto.shp) +
 my.map
 ```
 
-#### 2025년
+### 2025년
 
 ```{r}
 #| results: hide
@@ -567,7 +575,7 @@ my.map <- tm_shape(carto.shp) +
 my.map
 ```
 
-#### 2055년
+### 2055년
 
 ```{r}
 #| results: hide
@@ -737,6 +745,43 @@ my.map <- tm_shape(carto.shp) +
 my.map
 ```
 
+## Row
+
+### Column
+
+```{r}
+#| results: hide
+library(tidyverse)
+library(sf)
+library(tmap)
+SIGUNGU1.shp <- st_read("D:/My R/Korean Administrative Areas/행정구역 셰이프 파일/3 Generalization/2023_2Q/NOT_MOVE/SIGUNGU1_NM_2023_2Q_GEN_0030.shp", options = "ENCODING=CP949")
+SIDO_Polyline.shp <- st_read("D:/My R/Korean Administrative Areas/행정구역 셰이프 파일/3 Generalization/2023_2Q/NOT_MOVE/SIDO_Polyline_NM_2023_2Q_GEN_FULL.shp", options = "ENCODING=CP949")
+GCP_1975_2023.shp <- st_read("D:/My R/Population Geography/2 Population Distribution/GCP_1975_2023.shp", options = "ENCODING=CP949")
+```
+
+```{r}
+#| title: Geographic Center of Population in South Korea, 1975~2023
+tmap_mode("view")
+tm_shape(GCP_1975_2023.shp) + 
+  tm_dots(col = "red", size = 1, alpha = 0.5,   
+          id = "Year", 
+          popup.vars = c(
+            "이름" = "EMD_FNM",
+            "ID" = "EMD_ID", 
+            "위도" = "Latitud",
+            "경도" = "Longitd"
+            ),
+          popup.format = list(
+            Latitud = list(digits = 4),
+            Longitd = list(digits = 4)
+          )
+          ) +
+  tm_shape(SIDO_Polyline.shp) + tm_lines(lwd = 2) + 
+  tm_basemap(
+    c("OpenStreetMap", "Esri.WorldImagery")
+  )
+```
+
 # 인구 구조
 
 ## Row
@@ -749,7 +794,7 @@ my.map
 ```
 :::
 
-### Column 
+### Column
 
 ```{r}
 #| title: "한국의 인구 피라미드, 2000~2072"
@@ -831,7 +876,7 @@ plot_ly() %>%
     barmode = "relative",
     bargap = 0.1,
     hovermode = "y unified",
-    legend = list(x = 0.85, y = 0.95),
+    legend = list(x = 0.85, y = 0.99),
     xaxis = list(
       title = "Population",
       tickvals = seq(-1, 1, by = 0.5),

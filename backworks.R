@@ -219,10 +219,14 @@ data_sel <- age_sex_data |>
 data_sel |> 
   mutate(
     Ages = fct(Ages, levels = unique(Ages)), 
+    Gender = fct(Gender, levels = c("Male", "Female")),
     Pop = if_else(Gender == "Male", -Pop, Pop),
   ) |> 
   plot_ly(
-    x = ~Pop, y = ~Ages, color = ~Gender 
+    x = ~Pop, 
+    y = ~Ages, 
+    color = ~Gender, 
+    frame = ~Year
   ) |> 
   add_bars(orientation = 'h', hoverinfo = 'text') |> 
   layout(
@@ -235,56 +239,134 @@ data_sel |>
     legend = list(
       x = 0.85, y = 0.95
     )
-  ) 
-
-
-
-data_sel_proc <- data_sel |> 
-  mutate(
-    Ages = fct(Ages, levels = unique(Ages)), 
-    Pop = if_else(Gender == "Male", -Pop, Pop)
   ) |> 
-  pivot_wider(names_from = Gender, values_from = Pop) |> 
+  animation_slider(currentvalue = list(prefix = "Year: "))
+  
+
+# 전처리: 남성은 음수로
+data_proc <- data_sel |> 
   mutate(
-    hover_text = paste0(
-      "Age Group: ", Ages, "<br>",
-      "Male: ", formatC(abs(Male), format = "f", digits = 2, big.mark = ","), "<br>",
-      "Female: ", formatC(Female, format = "f", digits = 2, big.mark = ",")
-    )
+    Gender = factor(Gender, levels = c("Male", "Female")),
+    Ages = fct(Ages, levels = unique(Ages)),
+    Pop = if_else(Gender == "Male", -Pop, Pop)
   )
 
-plot_ly() |>
+# 남성과 여성 데이터 분리
+male_data <- filter(data_proc, Gender == "Male")
+female_data <- filter(data_proc, Gender == "Female")
+
+# plot 생성
+plot_ly() %>%
   add_trace(
-    data = data_sel_proc,
-    x = ~Male, y = ~Ages,
-    type = 'bar', name = 'Male',
-    orientation = 'h',
-    marker = list(color = "#b3de69"),
-    customdata = data_sel_proc$hover_text,
-    hovertemplate = "%{customdata}<extra></extra>",
-    textposition = "none"
-  ) |>
+    data = male_data,
+    x = ~Pop, y = ~Ages,
+    type = "bar",
+    name = "Male",
+    orientation = "h",
+    marker = list(color = "#8da0cb"),
+    frame = ~Year,
+    text = ~paste("Year:", Year, "<br>Age:", Ages, "<br>Male:", formatC(abs(Pop), format = "f", digits = 3, big.mark = ",")),
+    hoverinfo = "text",
+    textposition = "none" 
+  ) |> 
   add_trace(
-    data = data_sel_proc,
-    x = ~Female, y = ~Ages,
-    type = 'bar', name = 'Female',
-    orientation = 'h',
-    marker = list(color = "#fdb462"),
-    customdata = data_sel_proc$hover_text,
-    hovertemplate = "%{customdata}<extra></extra>",
-    textposition = "none"
-  ) |>
+    data = female_data,
+    x = ~Pop, y = ~Ages,
+    type = "bar",
+    name = "Female",
+    orientation = "h",
+    marker = list(color = "#e78ac3"),
+    frame = ~Year,
+    text = ~paste("Year:", Year, "<br>Age:", Ages, "<br>Female:", formatC(abs(Pop), format = "f", digits = 3, big.mark = ",")),
+    hoverinfo = "text", 
+    textposition = "none" 
+  ) %>%
   layout(
     barmode = "relative",
     bargap = 0.1,
+    hovermode = "y unified",
+    legend = list(x = 0.85, y = 0.95),
     xaxis = list(
       title = "Population",
-      tickvals = c(-1, -0.5, 0, 0.5, 1),
-      ticktext = as.character(abs(c(-1, 0.5, 0, 0.5, 1)))
+      tickvals = seq(-1, 1, by = 0.5),
+      ticktext = as.character(abs(seq(-1, 1, by = 0.5)))
+    ),
+    yaxis = list(title = "Age Group")
+  )
+
+
+# tooltip 문자열 구성
+data_wide <- data_sel %>%
+  mutate(
+    Gender = factor(Gender, levels = c("Male", "Female")),
+    Pop = if_else(Gender == "Male", -Pop, Pop)
+  ) %>%
+  pivot_wider(names_from = Gender, values_from = Pop) %>%
+  mutate(
+    Ages = fct(Ages, levels = unique(Ages)),
+    tooltip = paste0(
+      "<span style='font-family:monospace'>",
+      "Year:      ", Year, "<br>",
+      "Age Group: ", Ages, "<br>",
+      "Male:    ", formatC(abs(Male), format = "f", digits = 3, big.mark = ","), "<br>",
+      "Female:  ", formatC(Female, format = "f", digits = 3, big.mark = ","),
+      "</span>"
+    )
+  )
+
+# 플롯 생성
+plot_ly() %>%
+  # 공통 툴팁 trace (보이지 않음)
+  add_trace(
+    data = data_wide,
+    x = ~0, y = ~Ages,
+    type = "bar",
+    name = "tooltip",
+    orientation = "h",
+    marker = list(color = 'rgba(0,0,0,0)'),
+    showlegend = FALSE,
+    text = ~tooltip,
+    hoverinfo = "text",
+    frame = ~Year,
+    textposition = "none"
+  ) %>%
+  # 남성 bar
+  add_trace(
+    data = data_wide,
+    x = ~Male, y = ~Ages,
+    type = "bar",
+    name = "Male",
+    orientation = "h",
+    marker = list(color = "#8da0cb"),
+    hoverinfo = "skip",
+    frame = ~Year,
+    textposition = "none"
+  ) %>%
+  # 여성 bar
+  add_trace(
+    data = data_wide,
+    x = ~Female, y = ~Ages,
+    type = "bar",
+    name = "Female",
+    orientation = "h",
+    marker = list(color = "#e78ac3"),
+    hoverinfo = "skip",
+    frame = ~Year,
+    textposition = "none"
+  ) %>%
+  layout(
+    barmode = "relative",
+    bargap = 0.1,
+    hovermode = "y unified",
+    xaxis = list(
+      title = "Population",
+      tickvals = seq(-1, 1, by = 0.5),
+      ticktext = as.character(abs(seq(-1, 1, by = 0.5)))
     ),
     yaxis = list(title = "Age Group"),
-    legend = list(
-      x = 0.85, y = 0.95
-    ),
-    hovermode = "y unified"  # 핵심: y축 기준 통합
-  )
+    legend = list(x = 0.85, y = 0.95)
+  ) %>%
+  animation_opts(
+    frame = 1000, transition = 500, redraw = FALSE
+  ) %>%
+  animation_slider(currentvalue = list(prefix = "Year: "))
