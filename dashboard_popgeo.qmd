@@ -276,9 +276,26 @@ tm_shape(SIGUNGU1.shp) + tm_fill(
     "코드번호" = "SGG1_CD" 
   ) 
   ) + tm_borders() +
-  tm_shape(SIDO_Polyline.shp) + tm_lines(col = "black", lwd = 2)
+  tm_shape(SIDO_Polyline.shp) + tm_lines(col = "black", lwd = 2) +
+  tm_basemap(
+    c("OpenStreetMap", "Esri.WorldImagery", "Esri.WorldGrayCanvas")
+  )  
 
 ```
+
+## Row
+
+::: {.card title="World Population Prospects 2024"}
+### {width="50%"}
+{{< video https://www.youtube.com/watch?v=Rteb1ZCgiX8 >}}
+
+:::
+
+::: {.card title="인구이동총조사 100년(통계청)"}
+### {width="50%"}
+{{< video https://www.youtube.com/watch?v=2-LsyVx2EF8 >}}
+
+:::
 
 # 인구 성장
 
@@ -302,7 +319,7 @@ tm_shape(SIGUNGU1.shp) + tm_fill(
 
 ## Row
 
-### Column
+### Column {width="50%"}
 
 ```{r}
 #| title: "우리나라 시도별 인구 성장, 1975~2023"
@@ -382,6 +399,20 @@ data.sel |>
   )
 
 ```
+
+## Row
+
+::: {.card title="Paul Ehrlich's The Population Bomb"}
+### {width="50%"}
+{{< video https://www.youtube.com/watch?v=W8XOF3SOu8I >}}
+
+:::
+
+::: {.card title="The Demographic Dividend"}
+### {width="50%"}
+{{< video https://www.youtube.com/watch?v=zWaRS56jDJE&list=PL75500EACFAA7552F&index=4 >}}
+
+:::
 
 # 인구 분포
 
@@ -660,7 +691,7 @@ my.map <- tm_shape(carto.shp) +
 my.map
 ```
 
-#### 2100년
+### 2100년
 
 ```{r}
 #| results: hide
@@ -892,3 +923,4 @@ data_sel |>
 # 인구 동태
 
 # 인구 이동
+::::::::
