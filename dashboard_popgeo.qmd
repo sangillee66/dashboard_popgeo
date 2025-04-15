@@ -816,7 +816,7 @@ tm_shape(GCP_1975_2023.shp) +
 ## Row
 
 ::: {.row title="우리나라 인구소멸위험지수(2023년) 및 시군구별 추이(2015~2022년)"}
-왼편 지도에서 시군구 하나를 클릭하면 2015\~2022년의 추이를 볼 수 있습니다. 오픈 API를 통해 KOSIS(<https://kosis.kr/>) 데이터를 가져와 그래프를 그리기 때문에 시간이 지체될 수 있습니다.
+왼편 지도에서 시군구 하나를 클릭하면 2015\~2023년의 추이를 볼 수 있습니다. 오픈 API를 통해 KOSIS(<https://kosis.kr/>) 데이터를 가져와 그래프를 그리기 때문에 시간이 지체될 수 있습니다.
 
 <iframe src="https://sangillee.shinyapps.io/ClickOnMap/" loading="lazy" style="width: 100%; height: 600px; border: 0px none;" allow="web-share; clipboard-write">
 
