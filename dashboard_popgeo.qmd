@@ -286,15 +286,15 @@ tm_shape(SIGUNGU1.shp) + tm_fill(
 ## Row
 
 ::: {.card title="World Population Prospects 2024"}
-### {width="50%"}
-{{< video https://www.youtube.com/watch?v=Rteb1ZCgiX8 >}}
+###  {width="50%"}
 
+{{< video https://www.youtube.com/watch?v=Rteb1ZCgiX8 >}}
 :::
 
 ::: {.card title="인구이동총조사 100년(통계청)"}
-### {width="50%"}
-{{< video https://www.youtube.com/watch?v=2-LsyVx2EF8 >}}
+###  {width="50%"}
 
+{{< video https://www.youtube.com/watch?v=2-LsyVx2EF8 >}}
 :::
 
 # 인구 성장
@@ -403,15 +403,15 @@ data.sel |>
 ## Row
 
 ::: {.card title="Paul Ehrlich's The Population Bomb"}
-### {width="50%"}
-{{< video https://www.youtube.com/watch?v=W8XOF3SOu8I >}}
+###  {width="50%"}
 
+{{< video https://www.youtube.com/watch?v=W8XOF3SOu8I >}}
 :::
 
 ::: {.card title="The Demographic Dividend"}
-### {width="50%"}
-{{< video https://www.youtube.com/watch?v=zWaRS56jDJE&list=PL75500EACFAA7552F&index=4 >}}
+###  {width="50%"}
 
+{{< video https://www.youtube.com/watch?v=zWaRS56jDJE&list=PL75500EACFAA7552F&index=4 >}}
 :::
 
 # 인구 분포
@@ -817,7 +817,15 @@ tm_shape(GCP_1975_2023.shp) +
 
 ## Row
 
-::: {.card title="세계의 인구 구조"}
+::: {.card title="세계의 중위 연령"}
+### 
+
+```{=html}
+<iframe src="https://ourworldindata.org/explorers/population-and-demography?country=Asia+%28UN%29~Europe+%28UN%29~Africa+%28UN%29~Oceania+%28UN%29~Northern+America+%28UN%29~Latin+America+and+the+Caribbean+%28UN%29~KOR~OWID_WRL&indicator=Median+age&Sex=Both+sexes&Age=Total&Projection+scenario=Medium&hideControls=true&tab=chart" loading="lazy" style="width: 100%; height: 600px; border: 0px none;" allow="web-share; clipboard-write"></iframe>
+```
+:::
+
+::: {.card title="세계의 연령 구조"}
 ### 
 
 ```{=html}
@@ -825,12 +833,100 @@ tm_shape(GCP_1975_2023.shp) +
 ```
 :::
 
-### Column
+## Row
+
+```{r}
+#| title: "세계의 인구 피라미드, 1950~2100"
+
+library(tidyverse)
+library(plotly)
+
+my.one.data <- read_rds("D:/My R/Population Geography/3 Population Structure/world_age_one.rds")
+
+type.sel <- "World"
+age_sex_data <- my.one.data |> 
+  filter(
+    Type %in% type.sel,
+  ) |> 
+  mutate(
+    Year = as.integer(Year),
+    Age = as.character(Age)
+  ) |> 
+  rename(
+    Pop = Population,
+    Ages = Age
+  )
+
+pyramid_data <- age_sex_data |> 
+  filter(
+    Gender != "Total"
+  ) |> 
+  mutate(
+    Pop_r = Pop * 100/ sum(Pop),
+    .by = Year
+  ) |> 
+  mutate(
+    Ages = if_else(Ages == "100+", "100", Ages)
+  )
+
+pyramid_data |> 
+  mutate(
+    Ages = fct(Ages, levels = unique(Ages)), 
+    Gender = fct(Gender, levels = c("Male", "Female")),
+    Pop_r = if_else(Gender == "Male", -Pop_r, Pop_r),
+  ) |> 
+  plot_ly(
+    x = ~Pop_r, 
+    y = ~Ages, 
+    color = ~Gender, 
+    frame = ~Year
+  ) |> 
+  add_bars(
+    color = ~Gender, colors = c("#8da0cb", "#e78ac3"),
+    orientation = 'h', 
+    customdata = abs(pyramid_data$Pop),
+    hovertemplate = "%{customdata:,}"
+    ) |> 
+  layout(
+    bargap = 0.1,
+    barmode = "relative",
+    xaxis = list(
+      title = "Population (%)",
+      tickvals = c(-1, -0.5, 0, 0.5, 1),
+      ticktext = as.character(abs(c(-1, 0.5, 0, 0.5, 1)))
+    ),
+    yaxis = list(
+      title = "Ages",
+      tickvals = unique(pyramid_data$Ages)[seq(1, 101, 5)],
+      ticktext = c(unique(pyramid_data$Ages)[seq(1, 100, 5)], "100+")
+    ),
+    legend = list(
+      x = 0.85, y = 0.95,
+      traceorder = "reversed"
+    ),
+    margin = list(l = 75, r = 75, t = 75, b = 75),
+    hovermode = "y unified",
+    hoverlabel = list(bgcolor = "white", font = list(size = 12, family = "Pretendard Medium")),
+    bargap = 0.1, barmode = "overlay"
+  ) |> 
+  config(
+  displaylogo = FALSE,  
+  modeBarButtonsToRemove = c(
+    "zoom2d", "pan2d", "select2d", "lasso2d",
+    "zoomIn2d", "zoomOut2d", "autoScale2d", "resetScale2d",
+    "hoverClosestCartesian", "hoverCompareCartesian",
+    "toggleSpikelines", "resetViews", "sendDataToCloud"
+    )
+  ) |> 
+  animation_slider(currentvalue = list(prefix = "Year: "))
+  
+```
 
 ```{r}
 #| title: "한국의 인구 피라미드, 2000~2072"
 
 library(tidyverse)
+library(readxl)
 library(plotly)
 my.age.sex.data.one.100plus <- read_excel("D:/My R/Korea Census Data Manipulation/4 Population Projections/2022 기준/Nation_Age_Sex_Proj_One_100Plus_2000_2072.xlsx", sheet = 1)
 
@@ -850,12 +946,9 @@ age_sex_data <- my.age.sex.data.one.100plus |>
       "여자"~"Female"
     ),
     Ages = ifelse(Ages == 100, "100+", Ages)
-  ) |> 
-  filter(
-    Gender != "Total"
-  )
+  ) 
 
-data_sel <- age_sex_data |> 
+pyramid_data <- age_sex_data |> 
   filter(
     Gender != "Total"
   ) |> 
@@ -867,7 +960,7 @@ data_sel <- age_sex_data |>
     Ages = if_else(Ages == "100+", "100", Ages)
   )
 
-data_sel |> 
+pyramid_data |> 
   mutate(
     Ages = fct(Ages, levels = unique(Ages)), 
     Gender = fct(Gender, levels = c("Male", "Female")),
@@ -882,7 +975,7 @@ data_sel |>
   add_bars(
     color = ~Gender, colors = c("#8da0cb", "#e78ac3"),
     orientation = 'h', 
-    customdata = abs(data_sel$Pop),
+    customdata = abs(pyramid_data$Pop),
     hovertemplate = "%{customdata:,}"
     ) |> 
   layout(
@@ -895,11 +988,12 @@ data_sel |>
     ),
     yaxis = list(
       title = "Ages",
-      tickvals = unique(data_sel$Ages)[seq(1, 101, 5)],
-      ticktext = c(unique(data_sel$Ages)[seq(1, 100, 5)], "100+")
+      tickvals = unique(pyramid_data$Ages)[seq(1, 101, 5)],
+      ticktext = c(unique(pyramid_data$Ages)[seq(1, 100, 5)], "100+")
     ),
     legend = list(
-      x = 0.85, y = 0.95,
+      orientation = "v", 
+      x = 1.01, y = 0.95,
       traceorder = "reversed"
     ),
     margin = list(l = 75, r = 75, t = 75, b = 75),
@@ -908,7 +1002,7 @@ data_sel |>
     bargap = 0.1, barmode = "overlay"
   ) |> 
   config(
-  displaylogo = FALSE,  # plotly 로고 제거
+  displaylogo = FALSE,  
   modeBarButtonsToRemove = c(
     "zoom2d", "pan2d", "select2d", "lasso2d",
     "zoomIn2d", "zoomOut2d", "autoScale2d", "resetScale2d",
@@ -920,7 +1014,56 @@ data_sel |>
 
 ```
 
+## Row
+
+### Column
+
+```{r}
+#| title: "Median Age by Subregion in 2025"
+
+library(tidyverse)
+library(echarts4r)
+library(RColorBrewer)
+
+my.data <- read_rds("D:/My R/Population Geography/wpp_2024.rds")
+my.data |> 
+  filter(
+    type == "Region"
+  ) |> 
+  distinct(region_name) |> pull() -> UN.region.name
+
+data.sel <- my.data |> 
+  filter(
+    type == "Subregion" | region_name == "Northern America",
+    year == 2025
+  )
+  
+# data.sel |> 
+#   group_by(Region_NM) |> 
+#   arrange(median_age) |> 
+#   e_charts(region_name) |> 
+#   e_bar(serie = median_age) |> 
+#   e_flip_coords() |>
+#   e_tooltip()
+
+
+custom_colors <- brewer.pal(n = 6, name = "Set2")
+
+data.sel |> 
+  arrange(median_age) |> 
+  mutate(
+    median_age = round(median_age, digits = 1)
+  ) |> 
+  group_by(Region_NM) |> 
+  e_charts(region_name) |> 
+  e_bar(serie = median_age, stack = "grp") |> # stack 아규먼트가 두께를 크게 하는 핵심
+  e_color(custom_colors) |> 
+  e_flip_coords() |> 
+  e_x_axis(name = "Median Age") |> 
+  e_tooltip() |> 
+  e_legend()
+```
+
 # 인구 동태
 
 # 인구 이동
-::::::::
