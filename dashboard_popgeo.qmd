@@ -813,6 +813,16 @@ tm_shape(GCP_1975_2023.shp) +
   )
 ```
 
+## Row
+
+::: {.row title="우리나라 인구소멸위험지수(2023년) 및 시군구별 추이(2015~2022년)"}
+왼편 지도에서 시군구 하나를 클릭하면 2015\~2022년의 추이를 볼 수 있습니다. 오픈 API를 통해 KOSIS(<https://kosis.kr/>) 데이터를 가져와 그래프를 그리기 때문에 시간이 지체될 수 있습니다.
+
+<iframe src="https://sangillee.shinyapps.io/ClickOnMap/" loading="lazy" style="width: 100%; height: 600px; border: 0px none;" allow="web-share; clipboard-write">
+
+</iframe>
+:::
+
 # 인구 구조
 
 ## Row
@@ -1015,6 +1025,62 @@ pyramid_data |>
 ```
 
 ## Row
+
+### Column
+
+```{r}
+#| title: "Sex Ratio at Birth in 2025"
+#| warning: false
+library(tidyverse)
+library(spData)
+library(sf)
+library(leaflet)
+
+data(world)
+world <- st_as_sf(world)
+
+wpp_2024 <- read_rds("wpp_2024.rds")
+my_wpp <- wpp_2024 |> 
+  filter(year == 2025)
+
+world_data <- world |>
+  left_join(my_wpp, join_by(iso_a2 == ISO2)) |> 
+  filter(
+    !is.na(sex_ratio_birth)
+  )
+
+bins <- c(0, 102, 103, 105, 107, 110, Inf)
+pal <- colorBin("PRGn", domain = world_data$sex_ratio_birth, bins = bins)
+labels <- sprintf("<strong>%s</strong><br/>%g",
+  world_data$name_long, world_data$sex_ratio_birth) |> lapply(htmltools::HTML)
+
+leaflet(world_data) |> 
+  addProviderTiles(providers$Esri.WorldTopoMap) |> 
+  addPolygons(
+    fillColor = ~pal(sex_ratio_birth),
+    weight =  2, 
+    opacity = 1,
+    color = "white",
+    dashArray = "3",
+    fillOpacity = 0.6,
+    highlightOptions = highlightOptions(
+      weight = 5,
+      color = "#666",
+      dashArray = "",
+      fillOpacity = 0.6,
+      bringToFront = TRUE),
+    label = labels,
+    labelOptions = labelOptions(
+      style = list("font-weight" = "normal", padding = "3px 8px"),
+      textsize = "15px",
+      direction = "auto")
+  ) |> 
+  addLegend(
+    pal = pal, values = ~sex_ratio_birth, opacity = 0.6, title = NULL,
+    position = "bottomright"
+  )
+
+```
 
 ### Column
 
