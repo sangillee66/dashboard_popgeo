@@ -521,7 +521,6 @@ my.map <- tm_shape(carto.shp) +
 my.map
 ```
 
-
 ### 1990년
 
 ```{r}
@@ -1218,4 +1217,130 @@ data.sel |>
 
 # 인구 동태
 
+## Row
+
+::: {.card title="세계의 합계출산율(TFR)"}
+### 
+
+```{=html}
+<iframe src="https://ourworldindata.org/explorers/population-and-demography?indicator=Fertility+rate&Sex=Both+sexes&Age=Total&Projection+scenario=Medium&country=Asia+%28UN%29~Europe+%28UN%29~Africa+%28UN%29~Oceania+%28UN%29~Northern+America+%28UN%29~Latin+America+and+the+Caribbean+%28UN%29~OWID_WRL~KOR&tab=chart&hideControls=true" loading="lazy" style="width: 100%; height: 600px; border: 0px none;" allow="web-share; clipboard-write"></iframe>
+```
+:::
+
+::: {.card title="세계의 기대 수명"}
+### 
+
+```{=html}
+<iframe src="https://ourworldindata.org/explorers/population-and-demography?indicator=Life+expectancy&Sex=Both+sexes&Age=At+birth&Projection+scenario=Medium&country=Asia+%28UN%29~Europe+%28UN%29~Africa+%28UN%29~Oceania+%28UN%29~Northern+America+%28UN%29~Latin+America+and+the+Caribbean+%28UN%29~OWID_WRL~KOR&tab=chart&hideControls=true" loading="lazy" style="width: 100%; height: 600px; border: 0px none;" allow="web-share; clipboard-write"></iframe>
+```
+:::
+
+## Row
+
+::: {.card title="세계의 조출생률(CBR)"}
+### 
+
+```{=html}
+<iframe src="https://ourworldindata.org/explorers/population-and-demography?indicator=Birth+rate&Sex=Both+sexes&Age=At+birth&Projection+scenario=Medium&country=Asia+%28UN%29~Europe+%28UN%29~Africa+%28UN%29~Oceania+%28UN%29~Northern+America+%28UN%29~Latin+America+and+the+Caribbean+%28UN%29~OWID_WRL~KOR&tab=chart&hideControls=true" loading="lazy" style="width: 100%; height: 600px; border: 0px none;" allow="web-share; clipboard-write"></iframe>
+```
+:::
+
+::: {.card title="세계의 조사망률(CDR)"}
+### 
+
+```{=html}
+<iframe src="https://ourworldindata.org/explorers/population-and-demography?indicator=Death+rate&Sex=Both+sexes&Age=At+birth&Projection+scenario=Medium&country=Asia+%28UN%29~Europe+%28UN%29~Africa+%28UN%29~Oceania+%28UN%29~Northern+America+%28UN%29~Latin+America+and+the+Caribbean+%28UN%29~OWID_WRL~KOR&tab=chart&hideControls=true" loading="lazy" style="width: 100%; height: 600px; border: 0px none;" allow="web-share; clipboard-write"></iframe>
+```
+:::
+
 # 인구 이동
+
+## Row
+
+::: {.card title="세계의 순이동"}
+### 
+
+```{=html}
+<iframe src="https://ourworldindata.org/explorers/population-and-demography?indicator=Net+migration&Sex=Both+sexes&Age=At+birth&Projection+scenario=Medium&country=Asia+%28UN%29~Europe+%28UN%29~Africa+%28UN%29~Oceania+%28UN%29~Northern+America+%28UN%29~Latin+America+and+the+Caribbean+%28UN%29~OWID_WRL~KOR&tab=chart&hideControls=true" loading="lazy" style="width: 100%; height: 600px; border: 0px none;" allow="web-share; clipboard-write"></iframe>
+```
+:::
+
+::: {.card title="세계의 순이동률"}
+### 
+
+```{=html}
+<iframe src="https://ourworldindata.org/explorers/population-and-demography?indicator=Net+migration+rate&Sex=Both+sexes&Age=At+birth&Projection+scenario=Medium&country=Asia+%28UN%29~Europe+%28UN%29~Africa+%28UN%29~Oceania+%28UN%29~Northern+America+%28UN%29~Latin+America+and+the+Caribbean+%28UN%29~OWID_WRL~KOR&tab=chart&hideControls=true" loading="lazy" style="width: 100%; height: 600px; border: 0px none;" allow="web-share; clipboard-write"></iframe>
+```
+:::
+
+## Row
+
+### Column
+
+```{r}
+#| title: "세계의 지역간 인구이동 흐름"
+library(tidyverse)
+library(networkD3)
+IMS.Orig.Dest.1 <- read_rds("D:/My R/Population Geography/5 Population Migration/IMS_OD.rds")
+
+# OD 데이터 기본 정리
+
+my.Orig.data <- IMS.Orig.Dest.1 |> 
+  select(
+    Index:T_2024
+  ) |> 
+  rename_with(
+    ~str_replace(., "^T_", ""), starts_with("T_")
+  )
+my.data <- my.Orig.data |> 
+  pivot_longer(
+    cols = `1990`:`2024`,
+    names_to = "Year",
+    values_to = "Stocks"
+  )
+
+# Extended SDG Regions
+year.sel <- 2024
+region.sel <- 1829:1836
+data.sel <- my.data |> 
+  filter(
+    Year == year.sel,
+    Orig.Code %in% region.sel,
+    Dest.Code %in% region.sel
+  )
+
+# Sankey Diagram: networkD3 패키지
+
+link.df <- data.sel |> 
+  select(
+    Orig.Name, Dest.Name, Stocks
+  ) |> 
+  rename(
+    Origin = Orig.Name,
+    Destination = Dest.Name,
+    Stock_Flows = Stocks
+  ) |> 
+  mutate(
+    Destination = str_c(Destination, " ", sep = "") 
+  ) 
+
+node.df <- link.df |>
+  distinct(name = Origin) |>
+  bind_rows(link.df |> distinct(name = Destination)) |> as.data.frame()
+
+link.df <- link.df |> 
+  mutate(
+    ID_Orig = match(Origin, node.df$name) - 1,
+    ID_Dest = match(Destination, node.df$name) - 1
+  ) |> as.data.frame() 
+
+sankeyNetwork(Links = link.df, Nodes = node.df, Source = "ID_Orig", Target = "ID_Dest", Value = "Stock_Flows", NodeID = "name", LinkGroup = "Origin", sinksRight = FALSE, nodeWidth = 50, fontSize = 14, nodePadding = 20, fontFamily = "Arial")
+```
+
+### 서울시 구간 인구이동, 2022년
+
+::: {.card title="서울시 구간 인구이동, 2022년"}
+```{=html}
+<iframe src="flowmapblue.html" width="100%" height="600px" style="border:none;"></iframe>
+```
+:::
