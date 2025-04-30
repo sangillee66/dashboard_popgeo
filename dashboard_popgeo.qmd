@@ -1378,10 +1378,15 @@ OD_matrix <- MEI.SD.data |>
 groupNames <- region.name
 
 my.col <- viridis(n, alpha = 1, begin = 0, end = 1, option = "D")
-interactive_plot <- chorddiag(OD_matrix, groupNames = groupNames, groupColors = my.col)
+
+interactive_plot <- chorddiag(
+  OD_matrix, groupNames = groupNames, groupColors = my.col)
+
+interactive_plot
 
 library(htmlwidgets)
 saveWidget(interactive_plot, "chorddiag_plot.html", selfcontained = TRUE)
+
 ```
 
 ### Column
