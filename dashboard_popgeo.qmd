@@ -1278,7 +1278,7 @@ data.sel |>
 ### Column
 
 ```{r}
-#| title: "세계의 지역간 인구이동 흐름"
+#| title: "세계의 지역간 스톡 흐름(stock flow), 2024년 기준"
 library(tidyverse)
 library(networkD3)
 IMS.Orig.Dest.1 <- read_rds("D:/My R/Population Geography/5 Population Migration/IMS_OD.rds")
@@ -1337,10 +1337,11 @@ link.df <- link.df |>
 sankeyNetwork(Links = link.df, Nodes = node.df, Source = "ID_Orig", Target = "ID_Dest", Value = "Stock_Flows", NodeID = "name", LinkGroup = "Origin", sinksRight = FALSE, nodeWidth = 50, fontSize = 14, nodePadding = 20, fontFamily = "Arial")
 ```
 
-### Column
-
 ```{r}
-#| title: "우리나라 시도간 인구 이동, 2024년"
+#| eval: false
+#| echo: false
+#| include: false
+#| title: "우리나라 시도간 인구 이동 흐름, 2024년"
 library(tidyverse)
 library(chorddiag)
 library(viridis)
@@ -1378,13 +1379,35 @@ groupNames <- region.name
 
 my.col <- viridis(n, alpha = 1, begin = 0, end = 1, option = "D")
 interactive_plot <- chorddiag(OD_matrix, groupNames = groupNames, groupColors = my.col)
-interactive_plot
+
+library(htmlwidgets)
+saveWidget(interactive_plot, "chorddiag_plot.html", selfcontained = TRUE)
 ```
 
-## 서울시 구간 인구이동, 2022년
+### Column
 
-::: {.card title="서울시 구간 인구이동, 2022년"}
+::: {.card title="우리나라 시도간 인구 이동 흐름, 2024년"}
+### 
+
 ```{=html}
-<iframe src="flowmapblue.html" width="100%" height="600px" style="border:none;"></iframe>
+<iframe src="chorddiag_plot.html" width="100%" height="600px" style="border:none;"></iframe>
+```
+:::
+
+## Row
+
+::: {.card title="서울시 구간 인구 이동 흐름, 2024년"}
+### 
+
+```{=html}
+<iframe src="flowmapblue_seoul_gu.html" width="100%" height="600px" style="border:none;"></iframe>
+```
+:::
+
+::: {.card title="우리나라 시군간 인구 이동 흐름, 2024년"}
+### 
+
+```{=html}
+<iframe src="flowmapblue_SG1.html" width="100%" height="600px" style="border:none;"></iframe>
 ```
 :::
