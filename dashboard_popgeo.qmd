@@ -1400,7 +1400,7 @@ saveWidget(interactive_plot, "chorddiag_plot.html", selfcontained = TRUE)
 ### 
 
 ```{=html}
-<iframe src="flowmapblue_seoul_gu.html" width="100%" height="600px" style="border:none;"></iframe>
+<iframe src="flowmapblue_seoul_gu.html" width="100%" height="600px" style="border:none;" loading="eager" sandbox="allow-scripts allow-same-origin" referrerpolicy="no-referrer"></iframe>
 ```
 :::
 
@@ -1408,6 +1408,6 @@ saveWidget(interactive_plot, "chorddiag_plot.html", selfcontained = TRUE)
 ### 
 
 ```{=html}
-<iframe src="flowmapblue_SG1.html" width="100%" height="600px" style="border:none;"></iframe>
+<iframe src="flowmapblue_SG1.html" width="100%" height="600px" style="border:none;" loading="eager" sandbox="allow-scripts allow-same-origin" referrerpolicy="no-referrer"></iframe>
 ```
 :::
