@@ -1337,7 +1337,51 @@ link.df <- link.df |>
 sankeyNetwork(Links = link.df, Nodes = node.df, Source = "ID_Orig", Target = "ID_Dest", Value = "Stock_Flows", NodeID = "name", LinkGroup = "Origin", sinksRight = FALSE, nodeWidth = 50, fontSize = 14, nodePadding = 20, fontFamily = "Arial")
 ```
 
-### 서울시 구간 인구이동, 2022년
+### Column
+
+```{r}
+#| title: "우리나라 시도간 인구 이동, 2024년"
+library(tidyverse)
+library(chorddiag)
+library(viridis)
+
+MEI.SD.data <- read_rds("D:/My R/Population Geography/5 Population Migration/MEI_SD_data.rds")
+age.sel <- "Total_T.x"
+
+region.name <- MEI.SD.data |> 
+  distinct(Ori_NM) |> pull() 
+
+n <- region.name |> length()
+
+MEI.SD.data <- MEI.SD.data |> 
+  mutate(
+    Ori_NM = fct(Ori_NM, levels = region.name), 
+    Des_NM = fct(Des_NM, levels = region.name)
+  )
+
+OD_matrix <- MEI.SD.data |> 
+  pivot_wider(
+    id_cols = Ori_NM,
+    names_from = Des_NM,
+    values_from = age.sel,
+    names_expand = TRUE
+  ) |> 
+  mutate(
+    across(
+      everything(), ~replace_na(., 0)
+    )
+  ) |> 
+  select(-1) |> 
+  as.matrix()
+
+groupNames <- region.name
+
+my.col <- viridis(n, alpha = 1, begin = 0, end = 1, option = "D")
+interactive_plot <- chorddiag(OD_matrix, groupNames = groupNames, groupColors = my.col)
+interactive_plot
+```
+
+## 서울시 구간 인구이동, 2022년
 
 ::: {.card title="서울시 구간 인구이동, 2022년"}
 ```{=html}
