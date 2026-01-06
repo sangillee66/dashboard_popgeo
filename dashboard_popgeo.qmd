@@ -1206,7 +1206,7 @@ data.sel |>
     median_age = round(median_age, digits = 1)
   ) |> 
   group_by(Region_NM) |> 
-  e_charts(region_name) |> 
+  e_charts(region_name, width = "100%", height = "800px") |> 
   e_bar(serie = median_age, stack = "grp") |> # stack 아규먼트가 두께를 크게 하는 핵심
   e_color(custom_colors) |> 
   e_flip_coords() |> 
